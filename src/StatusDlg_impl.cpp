@@ -1,4 +1,4 @@
-#include "IntStatusDlg.h"
+#include "StatusDlg_impl.h"
 
 IntStatusDlg::IntStatusDlg( wxWindow* parent )
 :

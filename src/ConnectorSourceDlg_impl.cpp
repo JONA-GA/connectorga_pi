@@ -1,4 +1,4 @@
-#include "IntConnectorSourceDlg.h"
+#include "ConnectorSourceDlg_impl.h"
 
 
 wxArrayString *EnumerateSerialPorts(void);

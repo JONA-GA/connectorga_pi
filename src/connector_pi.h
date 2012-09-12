@@ -48,9 +48,9 @@
 #include <wx/dynarray.h>
 
 WX_DECLARE_OBJARRAY(DataSource, ArrayOfDataSources);
-#include "IntConnectorCfgDlg.h"
-#include "IntConnectorSourceDlg.h"
-#include "IntStatusDlg.h"
+#include "ConnectorCfgDlg_impl.h"
+#include "ConnectorSourceDlg_impl.h"
+#include "StatusDlg_impl.h"
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
