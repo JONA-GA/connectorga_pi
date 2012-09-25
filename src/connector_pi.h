@@ -90,12 +90,14 @@ public:
       void SetConnectorDialogY    (int x){ m_connector_dialog_y = x;}
 
       void OnConnectorDialogClose();
-
+		
+	  bool              LoadConfig(void);
+      bool              SaveConfig(void);
+		
 private:
       wxFileConfig     *m_pconfig;
       wxWindow         *m_parent_window;
-      bool              LoadConfig(void);
-      bool              SaveConfig(void);
+      
 
       ConnectorCfgDlg      *m_pConnectorDialog;
 	  

@@ -87,7 +87,7 @@ int connector_pi::Init(void)
     
       
       AddLocaleCatalog( _T("opencpn-connector_pi") );
-
+		
       // Set some default private member parameters
       m_connector_dialog_x = 0;
       m_connector_dialog_y = 0;
@@ -216,7 +216,7 @@ bool connector_pi::LoadConfig(void)
 
       if(pConf)
       {
-            pConf->SetPath ( _T( "/Settings/Connector" ) );
+            pConf->SetPath ( _T( "/Plugins/Connector" ) );
             pConf->Read ( _T( "ViewType" ),  &m_iViewType, 1 );
             pConf->Read ( _T( "ShowAtCursor" ),  &m_bShowAtCursor, 1 );
             pConf->Read ( _T( "Opacity" ),  &m_iOpacity, 255 );
@@ -228,16 +228,29 @@ bool connector_pi::LoadConfig(void)
                   m_connector_dialog_x = 5;
             if((m_connector_dialog_y < 0) || (m_connector_dialog_y > m_display_height))
                   m_connector_dialog_y = 5;
+			int cnt;
+            pConf->Read ( _T ( "DataSources" ), &cnt,0);
+			if (cnt> 0)
+		{
+			DataSource m_ds ;
+			wxString s ;
+			for ( int i=0;i<cnt;i++)
+			{
+				s.Printf(wxT("%d"),i+1);
+				m_ds.Id = (unsigned int)pConf->Read ( _T ( "Id") + s  ,0l);
+				m_ds.port=pConf->Read ( _T ( "Port" + s) );
+				m_ds.protocol= (unsigned int)pConf->Read ( _T ( "Proto" + s),0l );
+				m_ds.speed= (unsigned int)pConf->Read ( _T ( "Speed" + s),0l);
+				m_DataSources.Add(m_ds,i+1);
+			}
+		}	  
+				  
+				  
             pConf->SetPath ( _T ( "/Directories" ) );
             wxString def;
             def = ::wxGetCwd() + _T("/plugins");
             pConf->Read ( _T ( "ConnectorDataLocation" ), &m_connector_dir, def);
-            DataSource m_ds;
-			m_ds.Id=1;
-			m_ds.name= wxT("test");
-			m_ds.port=wxT("/ttyS32");
-			m_ds.protocol= SEATALK ;
-			m_DataSources.Add(m_ds,1);
+         
 			return true;
       }
       else

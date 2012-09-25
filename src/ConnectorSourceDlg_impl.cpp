@@ -15,7 +15,7 @@ ConnectorSourceDlg( parent )
 	for (unsigned int iPortIndex=0 ; iPortIndex < pAvailablePorts->GetCount() ; iPortIndex++)
             m_choicePort->Append( pAvailablePorts->Item(iPortIndex) );
 	m_choicePort->SetSelection(0);
-     // delete pAvailablePorts;
+      delete pAvailablePorts;
 }
 
 void IntConnectorSourceDlg::OnComSelected( wxCommandEvent& event )
@@ -30,12 +30,12 @@ void IntConnectorSourceDlg::OnNetSelected( wxCommandEvent& event )
 
 void IntConnectorSourceDlg::OnCancelClick( wxCommandEvent& event )
 {
-	this->Close();
+	this->Destroy();
 }
 
 void IntConnectorSourceDlg::OnOkClick( wxCommandEvent& event )
 {
-	this->Close();
+	this->Destroy();
 }
 
 wxArrayString *EnumerateSerialPorts(void)

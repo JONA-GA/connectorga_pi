@@ -22,7 +22,7 @@ ConnectorCfgDlg( parent )
 		col1.SetWidth(130);
         m_listCtrlDatasources->InsertColumn(1, col1);
         
-        // Add thirs column     
+        // Add third column     
         wxListItem col2;
         col2.SetId(2);
         col2.SetText( _("Protocol") );
@@ -55,21 +55,34 @@ ConnectorCfgDlg( parent )
 
 void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 {
-	
-	
+		
+		
 	
 	  if(NULL == m_pConnectorSourceDialog)
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		wxMilliSleep(10); // to give time to construct the dialog
+		wxMilliSleep(100); // to give time to construct the dialog
 	  }
-	m_pConnectorSourceDialog->Show();
+	  
+		m_pConnectorSourceDialog->Show();
+//	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
+ //   {
+        
+        
+  //  }
+	
 }
 
 void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 {
-// TODO: Implement OnEditClick
+	if(NULL == m_pConnectorSourceDialog)
+	  {
+		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
+		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
+		wxMilliSleep(15); // to give time to construct the dialog
+	  }
+	m_pConnectorSourceDialog->Show();
 }
 
 void IntConnectorCfgDlg::OnRemoveClick( wxCommandEvent& event )
@@ -80,11 +93,11 @@ void IntConnectorCfgDlg::OnRemoveClick( wxCommandEvent& event )
 void IntConnectorCfgDlg::OnCancelClick( wxCommandEvent& event )
 {
 // TODO: Implement OnCancelClick
-this->Close();
+this->Destroy();
 }
 
 void IntConnectorCfgDlg::OnOkClick( wxCommandEvent& event )
 {
 // TODO: Implement OnOkClick
-this->Close();
+this->Destroy();
 }
