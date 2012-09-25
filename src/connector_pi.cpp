@@ -207,7 +207,14 @@ void connector_pi::OnToolbarToolCallback(int id)
             m_pConnectorDialog->Move(wxPoint(m_connector_dialog_x, m_connector_dialog_y));
       }
 
-      m_pConnectorDialog->Show(!m_pConnectorDialog->IsShown());
+     // m_pConnectorDialog->Show(!m_pConnectorDialog->IsShown());
+	  if(m_pConnectorDialog->ShowModal() == wxID_OK)
+    {
+      
+        
+    }
+	delete m_pConnectorDialog;
+	m_pConnectorDialog= NULL ;	
 }
 
 bool connector_pi::LoadConfig(void)

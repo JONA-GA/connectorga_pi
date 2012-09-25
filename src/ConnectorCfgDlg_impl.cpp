@@ -50,7 +50,11 @@ ConnectorCfgDlg( parent )
 			}
 			
 		}
-			
+		m_pConnectorSourceDialog= NULL ;	
+}
+IntConnectorCfgDlg::~IntConnectorCfgDlg( void )
+{
+	delete m_pConnectorSourceDialog;
 }
 
 void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
@@ -62,16 +66,18 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		wxMilliSleep(100); // to give time to construct the dialog
+		wxMilliSleep(25); // to give time to construct the dialog
 	  }
 	  
-		m_pConnectorSourceDialog->Show();
-//	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
- //   {
+		//m_pConnectorSourceDialog->Show();
+		DataSource d;
+	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
+    {
+      d=m_pConnectorSourceDialog->m_DataSource;
         
-        
-  //  }
-	
+    }
+	delete m_pConnectorSourceDialog;
+	m_pConnectorSourceDialog= NULL ;	
 }
 
 void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
@@ -82,7 +88,14 @@ void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
 		wxMilliSleep(15); // to give time to construct the dialog
 	  }
-	m_pConnectorSourceDialog->Show();
+		DataSource d;
+	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
+    {
+      d=m_pConnectorSourceDialog->m_DataSource;
+        
+    }
+	delete m_pConnectorSourceDialog;
+	m_pConnectorSourceDialog= NULL ;
 }
 
 void IntConnectorCfgDlg::OnRemoveClick( wxCommandEvent& event )

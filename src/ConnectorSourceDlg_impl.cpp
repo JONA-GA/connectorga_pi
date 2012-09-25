@@ -17,7 +17,10 @@ ConnectorSourceDlg( parent )
 	m_choicePort->SetSelection(0);
       delete pAvailablePorts;
 }
-
+IntConnectorSourceDlg::~IntConnectorSourceDlg( void )
+{
+	
+}
 void IntConnectorSourceDlg::OnComSelected( wxCommandEvent& event )
 {
 // TODO: Implement OnComSelected
