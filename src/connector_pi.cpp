@@ -207,7 +207,7 @@ void connector_pi::OnToolbarToolCallback(int id)
             m_pConnectorDialog->Move(wxPoint(m_connector_dialog_x, m_connector_dialog_y));
       }
 
-     // m_pConnectorDialog->Show(!m_pConnectorDialog->IsShown());
+     
 	  if(m_pConnectorDialog->ShowModal() == wxID_OK)
     {
       
@@ -235,6 +235,7 @@ bool connector_pi::LoadConfig(void)
                   m_connector_dialog_x = 5;
             if((m_connector_dialog_y < 0) || (m_connector_dialog_y > m_display_height))
                   m_connector_dialog_y = 5;
+			pConf->SetPath ( _T( "/Plugins/Connector/DataSources" ) );
 			int cnt;
             pConf->Read ( _T ( "DataSources" ), &cnt,0);
 			if (cnt> 0)
@@ -248,7 +249,7 @@ bool connector_pi::LoadConfig(void)
 				m_ds.port=pConf->Read ( _T ( "Port" + s) );
 				m_ds.protocol= (unsigned int)pConf->Read ( _T ( "Proto" + s),0l );
 				m_ds.speed= (unsigned int)pConf->Read ( _T ( "Speed" + s),0l);
-				m_DataSources.Add(m_ds,i+1);
+				m_DataSources.Add(m_ds,1);
 			}
 		}	  
 				  
@@ -277,6 +278,8 @@ bool connector_pi::SaveConfig(void)
 
             pConf->Write ( _T ( "DialogPosX" ),   m_connector_dialog_x );
             pConf->Write ( _T ( "DialogPosY" ),   m_connector_dialog_y );
+			 pConf->DeleteGroup ( _T ( "/Plugins/Connector/DataSources" ) );
+			 pConf->SetPath ( _T ( "/Plugins/Connector/DataSources" ) );
 			 int cnt=m_DataSources.GetCount();
             pConf->Write ( _T ( "DataSources" ), cnt);
 			if (m_DataSources.GetCount()> 0)

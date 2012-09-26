@@ -23,8 +23,9 @@ class IntConnectorSourceDlg : public ConnectorSourceDlg
 		/** Constructor */
 		IntConnectorSourceDlg( wxWindow* parent );
 		~IntConnectorSourceDlg( void );
+		void SetWorkDatasource(DataSource* ds);
 	//// end generated class members
-	DataSource m_DataSource;
+		DataSource* m_pDataSource;
 };
 
 #endif // __IntConnectorSourceDlg__

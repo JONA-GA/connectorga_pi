@@ -28,12 +28,16 @@ ConnectorCfgDlg( parent )
         col2.SetText( _("Protocol") );
 		col2.SetWidth(180);
         m_listCtrlDatasources->InsertColumn(2, col2);
-		
+		ShowDataSources();
+}
+void IntConnectorCfgDlg::ShowDataSources()
+{		
 		if (m_DataSources.GetCount()> 0)
 		{
 			DataSource d ;
 			wxString s ;
 			wxListItem it; 
+			m_listCtrlDatasources->DeleteAllItems();
 			for (unsigned int i=0;i<m_DataSources.GetCount();i++)
 			{
 				d = m_DataSources.Item(i);
@@ -52,6 +56,7 @@ ConnectorCfgDlg( parent )
 		}
 		m_pConnectorSourceDialog= NULL ;	
 }
+
 IntConnectorCfgDlg::~IntConnectorCfgDlg( void )
 {
 	delete m_pConnectorSourceDialog;
@@ -61,19 +66,24 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 {
 		
 		
-	
+	DataSource d;
 	  if(NULL == m_pConnectorSourceDialog)
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		wxMilliSleep(25); // to give time to construct the dialog
+		m_pConnectorSourceDialog->SetWorkDatasource(&d);
+		
 	  }
-	  
-		//m_pConnectorSourceDialog->Show();
-		DataSource d;
-	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
+		int ret ;
+		int i;
+		
+		ret = m_pConnectorSourceDialog->ShowModal();
+	 if(ret == wxID_OK+1)
     {
-      d=m_pConnectorSourceDialog->m_DataSource;
+		i=m_DataSources.GetCount();
+		d.Id= i+1;
+		m_DataSources.Add(d,1);
+		ShowDataSources();
         
     }
 	delete m_pConnectorSourceDialog;
@@ -82,16 +92,18 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 
 void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 {
+	DataSource d;
 	if(NULL == m_pConnectorSourceDialog)
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		wxMilliSleep(15); // to give time to construct the dialog
+		m_pConnectorSourceDialog->SetWorkDatasource(&d);
+		
 	  }
-		DataSource d;
+		unsigned int tst=0;
 	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
     {
-      d=m_pConnectorSourceDialog->m_DataSource;
+      if (tst==0) tst=2;
         
     }
 	delete m_pConnectorSourceDialog;
@@ -100,7 +112,19 @@ void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 
 void IntConnectorCfgDlg::OnRemoveClick( wxCommandEvent& event )
 {
-// TODO: Implement OnRemoveClick
+	DataSource d;
+	int i;
+	long ind;
+	wxListItem it;
+	i=m_listCtrlDatasources->GetSelectedItemCount();
+	if (i>0)
+	{
+		ind=m_listCtrlDatasources->GetNextItem(-1,wxLIST_NEXT_ALL,wxLIST_STATE_SELECTED);
+		it.SetId(ind);
+		m_listCtrlDatasources->GetItem(it);
+		m_DataSources.RemoveAt(it.GetId());
+		m_listCtrlDatasources->DeleteItem(it);
+		}
 }
 
 void IntConnectorCfgDlg::OnCancelClick( wxCommandEvent& event )

@@ -1,6 +1,7 @@
 #include "ConnectorSourceDlg_impl.h"
 
 
+
 wxArrayString *EnumerateSerialPorts(void);
 
 
@@ -16,10 +17,15 @@ ConnectorSourceDlg( parent )
             m_choicePort->Append( pAvailablePorts->Item(iPortIndex) );
 	m_choicePort->SetSelection(0);
       delete pAvailablePorts;
+	  this->CenterOnParent();
 }
 IntConnectorSourceDlg::~IntConnectorSourceDlg( void )
 {
 	
+}
+void IntConnectorSourceDlg::SetWorkDatasource(DataSource* ds)
+{
+ m_pDataSource= ds;
 }
 void IntConnectorSourceDlg::OnComSelected( wxCommandEvent& event )
 {
@@ -38,6 +44,11 @@ void IntConnectorSourceDlg::OnCancelClick( wxCommandEvent& event )
 
 void IntConnectorSourceDlg::OnOkClick( wxCommandEvent& event )
 {
+	m_pDataSource->port=this->m_choicePort->GetStringSelection();
+	m_pDataSource->speed =wxAtoi( this->m_choiceBaudRate->GetStringSelection());
+	if(this->m_choiceProtocol->GetStringSelection()== wxT("NMEA 0183")) m_pDataSource->protocol=0;
+	if(this->m_choiceProtocol->GetStringSelection()== wxT("NMEA 2000")) m_pDataSource->protocol=1;
+	if(this->m_choiceProtocol->GetStringSelection()== wxT("SEATALK")) m_pDataSource->protocol=2;
 	this->Destroy();
 }
 

@@ -20,11 +20,13 @@ class IntConnectorCfgDlg : public ConnectorCfgDlg
 		void OnRemoveClick( wxCommandEvent& event );
 		void OnCancelClick( wxCommandEvent& event );
 		void OnOkClick( wxCommandEvent& event );
+		void ShowDataSources(void);
 	public:
 		/** Constructor */
 		IntConnectorCfgDlg( wxWindow* parent );
 		~IntConnectorCfgDlg( void );
 	//// end generated class members
+	
 	IntConnectorSourceDlg	*m_pConnectorSourceDialog;
 };
 
