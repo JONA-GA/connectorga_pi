@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void St_init();
+void St_init(DataSource d);
 
 #include <wx/arrimpl.cpp> // this is a magic incantation (sic)!
 WX_DEFINE_OBJARRAY(ArrayOfDataSources);
@@ -114,8 +114,13 @@ int connector_pi::Init(void)
  * 
  * 
  */
-		St_init();
- 
+ if (m_DataSources.GetCount() > 0)
+ {
+		unsigned int i;
+		for (i=0;i<m_DataSources.GetCount();i++){
+		if( m_DataSources.Item(i).protocol==2)St_init(m_DataSources.Item(i));
+		}
+ }
       return (WANTS_CURSOR_LATLON       |
               WANTS_TOOLBAR_CALLBACK    |
               INSTALLS_TOOLBAR_TOOL     |

@@ -2,7 +2,7 @@
 
 DataSource::DataSource()
 {
-	this->speed=9600
+	this->speed=9600 ;
 	this->protocol=1;
 	this->status=0;
 }

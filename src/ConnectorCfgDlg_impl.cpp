@@ -93,18 +93,30 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 {
 	DataSource d;
+	int i;
+	long ind;
+	wxListItem it;
+	
 	if(NULL == m_pConnectorSourceDialog)
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		m_pConnectorSourceDialog->SetWorkDatasource(&d);
-		
+		i=m_listCtrlDatasources->GetSelectedItemCount();
+		if (i>0)
+			{
+			ind=m_listCtrlDatasources->GetNextItem(-1,wxLIST_NEXT_ALL,wxLIST_STATE_SELECTED);
+			it.SetId(ind);
+			m_listCtrlDatasources->GetItem(it);
+			d=m_DataSources[it.GetId()];
+			m_pConnectorSourceDialog->SetWorkDatasource(&d);
+		  }
 	  }
-		unsigned int tst=0;
-	 if(m_pConnectorSourceDialog->ShowModal() == wxID_OK)
+	  int ret;
+		ret =m_pConnectorSourceDialog->ShowModal();
+	 if( ret == wxID_OK+1)
     {
-      if (tst==0) tst=2;
-        
+      m_DataSources[it.GetId()]=d;
+      ShowDataSources();  
     }
 	delete m_pConnectorSourceDialog;
 	m_pConnectorSourceDialog= NULL ;

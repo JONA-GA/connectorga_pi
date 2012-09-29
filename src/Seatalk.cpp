@@ -2,7 +2,7 @@
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
-  #include "wx/wx.h"
+#include "wx/wx.h"
 #endif //precompiled headers
 
 #include "connector_pi.h"
@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wx/string.h>
 #include "cnmea0183/nmea0183.h"
 using namespace std;
 using namespace boost;
@@ -17,7 +18,7 @@ using namespace boost;
 
 wxString recu ;
 CallbackAsyncSerial serial;
-
+ unsigned long vent ;
 CNMEA0183 cm_nmea;
 
 void stk(char tre[255])
@@ -40,6 +41,24 @@ switch (tre[0])
 			cm_nmea.Mtw.Write(snt);
 			PushNMEABuffer(snt.Sentence);
 			break;
+		case 0x10 : // ApW direction
+			vent =  (unsigned long)((tre[2]*256 +(unsigned char) tre[3]))/2 ;
+		break;
+		case 0x11 : // ApW direction
+		//(XX & 0x7F) + Y/10 Knots
+			t =  (float)((tre[2]& 0x7F) +((unsigned char) tre[3]/10)) ;
+			cm_nmea.Mwv.Empty();
+			cm_nmea.Mwv.WindAngle= vent;
+			unit = wxT("R");
+			cm_nmea.Mwv.Reference = unit;
+			cm_nmea.Mwv.WindSpeed= t;
+			if ((tre[2]& 0x80) ==0)cm_nmea.Mwv.WindSpeedUnits= wxT("K");
+			cm_nmea.Mwv.IsDataValid = NTrue;
+			tk = wxT("EC");
+			cm_nmea.TalkerID= tk ;
+			cm_nmea.Mwv.Write(snt);
+			PushNMEABuffer(snt.Sentence);
+		break;
 		default:
 		break;
 			
@@ -131,10 +150,11 @@ void received(const char *data, unsigned int len)
     }
 }
 
-void St_init()
+void St_init( DataSource d )
 {
 	
-	CallbackAsyncSerial serial("/dev/ttyS0",4800,
+	
+	CallbackAsyncSerial serial((const char*)d.port.mb_str(),4800,
 	boost::asio::serial_port_base::parity(
                 boost::asio::serial_port_base::parity::even),
 	boost::asio::serial_port_base::character_size(8),

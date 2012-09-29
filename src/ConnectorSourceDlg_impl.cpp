@@ -1,4 +1,5 @@
-#include "ConnectorSourceDlg_impl.h"
+#include "connector_pi.h"
+#include "data_source.h"
 
 
 
@@ -26,6 +27,15 @@ IntConnectorSourceDlg::~IntConnectorSourceDlg( void )
 void IntConnectorSourceDlg::SetWorkDatasource(DataSource* ds)
 {
  m_pDataSource= ds;
+ wxString st ;
+ st.Printf(wxT("%d"),m_pDataSource->speed);
+ this->m_choiceBaudRate->SetStringSelection(st) ;
+ this->m_choicePort->SetStringSelection(m_pDataSource->port) ;
+	if( m_pDataSource->protocol== 0 )this->m_choiceProtocol->SetStringSelection(wxT("NMEA 0183"));
+	if(m_pDataSource->protocol == 1)this->m_choiceProtocol->SetStringSelection(wxT("NMEA 2000"));
+	if(m_pDataSource->protocol ==2 )this->m_choiceProtocol->SetStringSelection(wxT("SEATALK"));
+	
+ 
 }
 void IntConnectorSourceDlg::OnComSelected( wxCommandEvent& event )
 {
