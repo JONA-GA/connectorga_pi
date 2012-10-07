@@ -11,6 +11,8 @@
 #include <vector>
 #include <boost/config.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
@@ -27,6 +29,7 @@ class AsyncSerialImpl;
  * Asyncronous serial class.
  * Intended to be a base class.
  */
+
 class AsyncSerial: private boost::noncopyable
 {
 public:
@@ -117,12 +120,15 @@ public:
     */
     void writeString(const std::string& s);
 
-    virtual ~AsyncSerial()=0;
+   ~AsyncSerial();
 
     /**
      * Read buffer maximum size
      */
     static const int readBufferSize=2048;
+	
+void setCallback(const
+            boost::function<void (const char*, size_t)>& callback);
 private:
 
     /**
@@ -157,7 +163,9 @@ private:
      */
     void doClose();
 
-    boost::shared_ptr<AsyncSerialImpl> pimpl;
+boost::shared_ptr<AsyncSerialImpl> pimpl;
+
+
 
 protected:
 

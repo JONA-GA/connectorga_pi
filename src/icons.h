@@ -7,7 +7,7 @@
 #	include <wx/wx.h>
 #endif
 
-extern void co_initialize_images(void);
+extern void con_initialize_images(void);
 
 extern wxBitmap *_img_connector;
 extern wxBitmap *_img_connector_pi;

@@ -29,10 +29,10 @@
 #ifndef _CONNECTORPI_H_
 #define _CONNECTORPI_H_
 
-#include "wx/wxprec.h"
-
+#include <wx/wxprec.h>
 #ifndef  WX_PRECOMP
-  #include "wx/wx.h"
+  #include <wx/wx.h>
+  #include <wx/glcanvas.h>
 #endif //precompiled headers
 
 #include <wx/fileconf.h>
@@ -41,13 +41,17 @@
 #define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
-#define     MY_API_VERSION_MINOR    6
+#define     MY_API_VERSION_MINOR    8
+
 
 #include "ocpn_plugin.h"
 #include "data_source.h"
-#include <wx/dynarray.h>
+#include "AsyncSerial.h"
 
-WX_DECLARE_OBJARRAY(DataSource, ArrayOfDataSources);
+#include <wx/dynarray.h>
+//class m_DataSources ;
+WX_DECLARE_OBJARRAY(DataSource *, ArrayOfDataSources);
+
 #include "ConnectorCfgDlg_impl.h"
 #include "ConnectorSourceDlg_impl.h"
 #include "StatusDlg_impl.h"
@@ -57,12 +61,14 @@ WX_DECLARE_OBJARRAY(DataSource, ArrayOfDataSources);
 
 #define CONNECTOR_TOOL_POSITION    -1          // Request default positioning of toolbar tool
 
-class connector_pi : public opencpn_plugin_16
+
+class connector_pi : public opencpn_plugin_18
 {
 public:
       connector_pi(void *ppimgr);
 	   ~connector_pi(void);
-	   
+	  ArrayOfDataSources  m_DataSources; 
+	  
 //    The required PlugIn Methods
       int Init(void);
       bool DeInit(void);
@@ -90,16 +96,14 @@ public:
       void SetConnectorDialogY    (int x){ m_connector_dialog_y = x;}
 
       void OnConnectorDialogClose();
-		
+	  void St_init( DataSource* d );
 	  bool              LoadConfig(void);
       bool              SaveConfig(void);
 		
 private:
       wxFileConfig     *m_pconfig;
       wxWindow         *m_parent_window;
-      
-
-      ConnectorCfgDlg      *m_pConnectorDialog;
+      IntConnectorCfgDlg      *m_pConnectorDialog;
 	  
       int               m_connector_dialog_x, m_connector_dialog_y;
       int               m_display_width, m_display_height;

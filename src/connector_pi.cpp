@@ -27,10 +27,10 @@
  */
 
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef  WX_PRECOMP
-  #include "wx/wx.h"
+  #include <wx/wx.h>
 #endif //precompiled headers
 
 #include "connector_pi.h"
@@ -38,12 +38,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-void St_init(DataSource d);
 
-#include <wx/arrimpl.cpp> // this is a magic incantation (sic)!
-WX_DEFINE_OBJARRAY(ArrayOfDataSources);
-
-ArrayOfDataSources  m_DataSources;
+//ArrayOfDataSources  m_DataSources;
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -70,12 +66,14 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //          PlugIn initialization and de-init
 //
 //---------------------------------------------------------------------------------------------------------
+#include "DataSourcesArray.h"
 
 connector_pi::connector_pi(void *ppimgr)
-      :opencpn_plugin_16(ppimgr)
+      :opencpn_plugin_18(ppimgr)
 {
+
       // Create the PlugIn icons
-      co_initialize_images();
+      con_initialize_images();
 }
 connector_pi::~connector_pi(void)
 {
@@ -117,8 +115,10 @@ int connector_pi::Init(void)
  if (m_DataSources.GetCount() > 0)
  {
 		unsigned int i;
+		DataSource* p;
 		for (i=0;i<m_DataSources.GetCount();i++){
-		if( m_DataSources.Item(i).protocol==2)St_init(m_DataSources.Item(i));
+			p = m_DataSources.Item(i);
+		if( p->protocol==2) St_init(p);
 		}
  }
       return (WANTS_CURSOR_LATLON       |
@@ -209,6 +209,7 @@ void connector_pi::OnToolbarToolCallback(int id)
       if(NULL == m_pConnectorDialog)
       {
             m_pConnectorDialog = new IntConnectorCfgDlg(m_parent_window );
+			m_pConnectorDialog->LinkToPlugin(this);
             m_pConnectorDialog->Move(wxPoint(m_connector_dialog_x, m_connector_dialog_y));
       }
 
@@ -245,16 +246,17 @@ bool connector_pi::LoadConfig(void)
             pConf->Read ( _T ( "DataSources" ), &cnt,0);
 			if (cnt> 0)
 		{
-			DataSource m_ds ;
+			DataSource * m_ds ;
 			wxString s ;
 			for ( int i=0;i<cnt;i++)
 			{
+				m_ds =new(DataSource) ;
 				s.Printf(wxT("%d"),i+1);
-				m_ds.Id = (unsigned int)pConf->Read ( _T ( "Id") + s  ,0l);
-				m_ds.port=pConf->Read ( _T ( "Port" + s) );
-				m_ds.protocol= (unsigned int)pConf->Read ( _T ( "Proto" + s),0l );
-				m_ds.speed= (unsigned int)pConf->Read ( _T ( "Speed" + s),0l);
-				m_DataSources.Add(m_ds,1);
+				m_ds->Id = (unsigned int)pConf->Read ( _T ( "Id") + s  ,0l);
+				m_ds->port=pConf->Read ( _T ( "Port" + s) );
+				m_ds->protocol= (unsigned int)pConf->Read ( _T ( "Proto" + s),0l );
+				m_ds->speed= (unsigned int)pConf->Read ( _T ( "Speed" + s),0l);
+				m_DataSources.Add( m_ds,1);
 			}
 		}	  
 				  
@@ -289,16 +291,16 @@ bool connector_pi::SaveConfig(void)
             pConf->Write ( _T ( "DataSources" ), cnt);
 			if (m_DataSources.GetCount()> 0)
 		{
-			DataSource d ;
+			DataSource * d ;
 			wxString s ;
 			for (unsigned int i=0;i<m_DataSources.GetCount();i++)
 			{
 				d = m_DataSources.Item(i);
-				s.Printf(wxT("%d"),d.Id);
-				pConf->Write ( _T ( "Id") + s , (int)d.Id );
-				pConf->Write ( _T ( "Port" + s),  d.port );
-				pConf->Write ( _T ( "Proto" + s), (int) d.protocol );
-				pConf->Write ( _T ( "Speed" + s), (int) d.speed );
+				s.Printf(wxT("%d"),d->Id);
+				pConf->Write ( _T ( "Id") + s , (int)d->Id );
+				pConf->Write ( _T ( "Port" + s),  d->port );
+				pConf->Write ( _T ( "Proto" + s), (int) d->protocol );
+				pConf->Write ( _T ( "Speed" + s), (int) d->speed );
 			}
 		}
 			pConf->SetPath ( _T ( "/Directories" ) );
@@ -323,5 +325,12 @@ void connector_pi::ShowPreferencesDialog( wxWindow* parent )
 
             SaveConfig();
       }
+}
+
+void connector_pi::St_init( DataSource* d )
+{
+	
+d->open(d->port,d->speed);		
+		
 }
 

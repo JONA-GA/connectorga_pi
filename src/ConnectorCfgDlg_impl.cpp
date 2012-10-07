@@ -1,7 +1,7 @@
 #include "connector_pi.h"
 #include "data_source.h"
 
-extern	ArrayOfDataSources m_DataSources ;
+
 
 IntConnectorCfgDlg::IntConnectorCfgDlg( wxWindow* parent )
 :
@@ -28,28 +28,33 @@ ConnectorCfgDlg( parent )
         col2.SetText( _("Protocol") );
 		col2.SetWidth(180);
         m_listCtrlDatasources->InsertColumn(2, col2);
-		ShowDataSources();
+		
+}
+void IntConnectorCfgDlg::LinkToPlugin(connector_pi *plugin)
+{
+	m_pPlugin = plugin;
+   ShowDataSources();
 }
 void IntConnectorCfgDlg::ShowDataSources()
 {		
-		if (m_DataSources.GetCount()> 0)
+		if (m_pPlugin->m_DataSources.GetCount()> 0)
 		{
-			DataSource d ;
+			DataSource * d ;
 			wxString s ;
 			wxListItem it; 
 			m_listCtrlDatasources->DeleteAllItems();
-			for (unsigned int i=0;i<m_DataSources.GetCount();i++)
+			for (unsigned int i=0;i<m_pPlugin->m_DataSources.GetCount();i++)
 			{
-				d = m_DataSources.Item(i);
-				s.Printf(wxT("%d"),d.Id);
+				d = m_pPlugin->m_DataSources.Item(i);
+				s.Printf(wxT("%d"),d->Id);
 				it.SetId(i);
 				it.SetColumn(0);
 				it.SetText(s);
 				m_listCtrlDatasources->InsertItem(it);
-				m_listCtrlDatasources->SetItem(i,1,d.port);
-				if(d.protocol== 0) s=wxT("NMEA0183");
-				if(d.protocol== 1) s=wxT("NMEA2000");
-				if(d.protocol== 2) s=wxT("SEATALK");
+				m_listCtrlDatasources->SetItem(i,1,d->port);
+				if(d->protocol== 0) s=wxT("NMEA0183");
+				if(d->protocol== 1) s=wxT("NMEA2000");
+				if(d->protocol== 2) s=wxT("SEATALK");
 				m_listCtrlDatasources->SetItem(i,2,s);
 			}
 			
@@ -66,12 +71,12 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 {
 		
 		
-	DataSource d;
+	DataSource * d;
 	  if(NULL == m_pConnectorSourceDialog)
 	  {
 		m_pConnectorSourceDialog= new IntConnectorSourceDlg (this );
 		m_pConnectorSourceDialog->Move(wxPoint(0, 0));
-		m_pConnectorSourceDialog->SetWorkDatasource(&d);
+		m_pConnectorSourceDialog->SetWorkDatasource(d);
 		
 	  }
 		int ret ;
@@ -80,9 +85,9 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 		ret = m_pConnectorSourceDialog->ShowModal();
 	 if(ret == wxID_OK+1)
     {
-		i=m_DataSources.GetCount();
-		d.Id= i+1;
-		m_DataSources.Add(d,1);
+		i=m_pPlugin->m_DataSources.GetCount();
+		d->Id= i+1;
+		m_pPlugin->m_DataSources.Add(d,1);
 		ShowDataSources();
         
     }
@@ -92,7 +97,7 @@ void IntConnectorCfgDlg::OnAddClick( wxCommandEvent& event )
 
 void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 {
-	DataSource d;
+	DataSource * d;
 	int i;
 	long ind;
 	wxListItem it;
@@ -107,15 +112,15 @@ void IntConnectorCfgDlg::OnEditClick( wxCommandEvent& event )
 			ind=m_listCtrlDatasources->GetNextItem(-1,wxLIST_NEXT_ALL,wxLIST_STATE_SELECTED);
 			it.SetId(ind);
 			m_listCtrlDatasources->GetItem(it);
-			d=m_DataSources[it.GetId()];
-			m_pConnectorSourceDialog->SetWorkDatasource(&d);
+			d = m_pPlugin->m_DataSources[it.GetId()];
+			m_pConnectorSourceDialog->SetWorkDatasource(d);
 		  }
 	  }
 	  int ret;
 		ret =m_pConnectorSourceDialog->ShowModal();
 	 if( ret == wxID_OK+1)
     {
-      m_DataSources[it.GetId()]=d;
+      m_pPlugin->m_DataSources[it.GetId()]=d;
       ShowDataSources();  
     }
 	delete m_pConnectorSourceDialog;
@@ -134,7 +139,7 @@ void IntConnectorCfgDlg::OnRemoveClick( wxCommandEvent& event )
 		ind=m_listCtrlDatasources->GetNextItem(-1,wxLIST_NEXT_ALL,wxLIST_STATE_SELECTED);
 		it.SetId(ind);
 		m_listCtrlDatasources->GetItem(it);
-		m_DataSources.RemoveAt(it.GetId());
+		m_pPlugin->m_DataSources.RemoveAt(it.GetId());
 		m_listCtrlDatasources->DeleteItem(it);
 		}
 }

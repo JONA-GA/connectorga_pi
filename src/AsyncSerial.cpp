@@ -30,8 +30,11 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+//#include <boost/shared_ptr.hpp>
+//#include <boost/enable_shared_from_this.hpp>
 #include "AsyncSerial.h"
 #include <boost/bind.hpp>
+
 
 using namespace std;
 using namespace boost;
@@ -71,6 +74,7 @@ AsyncSerial::AsyncSerial(): pimpl(new AsyncSerialImpl)
 
 }
 
+   
 AsyncSerial::AsyncSerial(const std::string& devname, unsigned int baud_rate,
         asio::serial_port_base::parity opt_parity,
         asio::serial_port_base::character_size opt_csize,
@@ -158,7 +162,7 @@ void AsyncSerial::writeString(const std::string& s)
         lock_guard<mutex> l(pimpl->writeQueueMutex);
         pimpl->writeQueue.insert(pimpl->writeQueue.end(),s.begin(),s.end());
     }
-    pimpl->io.post(boost::bind(&AsyncSerial::doWrite, this));
+    pimpl->io.post(boost::bind(&AsyncSerial::doWrite,this));
 }
 
 AsyncSerial::~AsyncSerial()
@@ -207,8 +211,7 @@ void AsyncSerial::readEnd(const boost::system::error_code& error,
             setErrorStatus(true);
         }
     } else {
-        if(pimpl->callback) pimpl->callback(pimpl->readBuffer,
-                bytes_transferred);
+        if(pimpl->callback) pimpl->callback(pimpl->readBuffer,bytes_transferred);
         doRead();
     }
 }
@@ -274,6 +277,12 @@ void AsyncSerial::setErrorStatus(bool e)
 void AsyncSerial::setReadCallback(const boost::function<void (const char*, size_t)>& callback)
 {
     pimpl->callback=callback;
+}
+
+void AsyncSerial::setCallback(const
+        boost::function<void (const char*, size_t)>& callback)
+{
+    setReadCallback(callback);
 }
 
 void AsyncSerial::clearReadCallback()
@@ -411,7 +420,7 @@ void AsyncSerial::open(const std::string& devname, unsigned int baud_rate,
     setErrorStatus(false);//If we get here, no error
     pimpl->open=true; //Port is now open
 
-    thread t(bind(&AsyncSerial::doRead, this));
+    thread t(bind(&AsyncSerial::doRead, shared_from_this()));
     pimpl->backgroundThread.swap(t);
 }
 
@@ -526,12 +535,17 @@ void AsyncSerial::clearReadCallback()
 {
     pimpl->callback.clear();
 }
-
+void AsyncSerial::setCallback(const
+        boost::function<void (const char*, size_t)>& callback)
+{
+    setReadCallback(callback);
+}
 #endif //__APPLE__
 
 //
 //Class CallbackAsyncSerial
 //
+
 
 CallbackAsyncSerial::CallbackAsyncSerial(): AsyncSerial()
 {
