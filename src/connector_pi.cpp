@@ -38,8 +38,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-//ArrayOfDataSources  m_DataSources;
+#include <wx/arrimpl.cpp> // this is a magic incantation (sic)!
+WX_DEFINE_OBJARRAY(ArrayOfDataSources);
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -66,7 +66,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //          PlugIn initialization and de-init
 //
 //---------------------------------------------------------------------------------------------------------
-#include "DataSourcesArray.h"
+
 
 connector_pi::connector_pi(void *ppimgr)
       :opencpn_plugin_18(ppimgr)
