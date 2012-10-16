@@ -40,7 +40,7 @@
 ** You can use it any way you like.
 */
 
-#include <wx/listimpl.cpp>
+#include "wx/listimpl.cpp"
 WX_DEFINE_LIST(MRL);
 
 
@@ -77,7 +77,7 @@ CNMEA0183::CNMEA0183()
    response_table.Append( (RESPONSE *) &Gxa );
 */
    response_table.Append( (CRESPONSE *) &Hdm );
-   response_table.Append( (CRESPONSE *) &Hdg );
+   response_table.Append( (CRESPONSE *) &cHdg );
    response_table.Append( (CRESPONSE *) &Hdt );
 /*
    response_table.Append( (RESPONSE *) &Hsc );

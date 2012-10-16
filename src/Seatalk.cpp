@@ -1,4 +1,4 @@
-#include "data_source.h"
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -13,10 +13,11 @@
 #include <string.h>
 #include <wx/string.h>
 #include <vector>
-
+#include "data_source.h"
 
 
 #include "cnmea0183/nmea0183.h"
+
 using namespace std;
 using namespace boost;
 
@@ -24,34 +25,38 @@ using namespace boost;
 
 
 unsigned long vent ;
-CNMEA0183 cm_nmea;
 
 void stk(unsigned char tre[255])
 {
+	CNMEA0183 cm_nmea ;
 	float t;
+	int r;
 	SENTENCE snt ;
 	wxString unit;
 	wxString tk;
 	
+	tk = wxT("EC");
+	cm_nmea.TalkerID= tk ;
+	
 switch (tre[0])
 {
+	
 		case 0x27 :
-		t =  (float)((tre[3]*256 +(unsigned char) tre[2])-100)/10 ;
+		t =  (float)((tre[3]*256 + tre[2])-100)/10 ;
 			cm_nmea.Mtw.Empty();
 			cm_nmea.Mtw.Temperature= t;
 			unit = wxT("C");
 			cm_nmea.Mtw.UnitOfMeasurement = unit;
-			tk = wxT("EC");
-			cm_nmea.TalkerID= tk ;
 			cm_nmea.Mtw.Write(snt);
 			PushNMEABuffer(snt.Sentence);
 			break;
+			
 		case 0x10 : // ApW direction
-			vent =  (unsigned long)((tre[2]*256 +(unsigned char) tre[3]))/2 ;
+			vent =  ((unsigned long)(tre[2]*256 +(unsigned long) tre[3]))/2 ;
 		break;
 		case 0x11 : // ApW direction
 		//(XX & 0x7F) + Y/10 Knots
-			t =  (float)((tre[2]& 0x7F) +((unsigned char) tre[3]/10)) ;
+			t =  ((float)(tre[2]& 0x7F) +( (float) tre[3]/10)) ;
 			cm_nmea.Mwv.Empty();
 			cm_nmea.Mwv.WindAngle= vent;
 			unit = wxT("R");
@@ -59,11 +64,42 @@ switch (tre[0])
 			cm_nmea.Mwv.WindSpeed= t;
 			if ((tre[2]& 0x80) ==0)cm_nmea.Mwv.WindSpeedUnits= wxT("K");
 			cm_nmea.Mwv.IsDataValid = NTrue;
-			tk = wxT("EC");
-			cm_nmea.TalkerID= tk ;
 			cm_nmea.Mwv.Write(snt);
 			PushNMEABuffer(snt.Sentence);
 		break;
+		
+		case 0x00 : // depth
+			t =  ((float)tre[4]*256 +(float) tre[3])/10 ;
+			cm_nmea.Dpt.Empty();
+			cm_nmea.Dpt.DepthMeters = t * 0.3 ;
+			cm_nmea.Dpt.OffsetFromTransducerMeters = 0;
+			cm_nmea.Dpt.Write(snt);
+			PushNMEABuffer(snt.Sentence);
+		break;
+		
+		case 0x99 : // hdg
+		r= (int)(signed char)tre[2];
+		cm_nmea.cHdg.Empty();
+		if (r>0)
+		{
+				cm_nmea.cHdg.MagneticVariationDegrees = abs(r)  ;
+				cm_nmea.cHdg.MagneticVariationDirection = West  ;
+			}
+		else
+			{
+				cm_nmea.cHdg.MagneticVariationDegrees = abs(r)  ;
+				cm_nmea.cHdg.MagneticVariationDirection = East  ;
+			}
+		break;
+		case 0x9c : // hdg
+		t =   ((tre[1]>>4) & 0x3)* 90 + (tre[2] & 0x3F)* 2 ;
+		cm_nmea.cHdg.MagneticSensorHeadingDegrees = t  ;
+		cm_nmea.cHdg.MagneticDeviationDegrees  = 0  ;
+		cm_nmea.cHdg.MagneticDeviationDirection = East  ;
+		cm_nmea.cHdg.Write(snt);
+		PushNMEABuffer(snt.Sentence);
+		break;
+		
 		default:
 		break;
 			

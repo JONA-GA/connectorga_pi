@@ -41,13 +41,13 @@
 ** You can use it any way you like.
 */
 
-class HDG : public CRESPONSE
+class cHDG : public CRESPONSE
 {
 
    public:
 
-      HDG();
-     ~HDG();
+      cHDG();
+     ~cHDG();
 
       /*
       ** Data
@@ -71,7 +71,7 @@ class HDG : public CRESPONSE
       ** Operators
       */
 
-      virtual const HDG& operator = ( const HDG& source );
+      virtual const cHDG& operator = ( const cHDG& source );
 };
 
 #endif // HDG_CLASS_HEADER
